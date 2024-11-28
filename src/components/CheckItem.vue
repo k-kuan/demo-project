@@ -3,9 +3,9 @@
     <div class="name">{{item.title}}</div>
     <a-progress :percent="item.value"  trailColor="#EAE8E8FF" />
     <div style="width: 100px">
-      <a-tag color="#e6a23c" v-if="item.value < 100">测试中</a-tag>
-<!--      <a-tag color="#ee0a24">未通过</a-tag>-->
-      <a-tag color="#07c160" v-if="item.value === 100">通过</a-tag>
+      <a-tag color="#e6a23c" v-if="!item.failureResult && item.value < 100">测试中</a-tag>
+      <a-tag color="#ee0a24" v-if="item.failureResult === 'FALL' && item.value < 100">未通过</a-tag>
+      <a-tag color="#07c160" v-if="item.failureResult === 'PASS' && item.value === 100">通过</a-tag>
     </div>
   </div>
 </template>

@@ -9,6 +9,10 @@ const list = ref([]);
 const isStart = ref(false);
 const isStop = ref(false);
 const isReset = ref(false);
+const resultObj = ref({
+  fail: 0,
+  pass: 0,
+})
 const handleReset = (item) => {
   isReset.value = item;
 }
@@ -20,6 +24,9 @@ const handleStart = (item) => {
 }
 const handleStop = (item) => {
   isStop.value = item;
+}
+const handleResult = (item) => {
+  resultObj.value = item;
 }
 </script>
 
@@ -34,12 +41,12 @@ const handleStop = (item) => {
       <div style="width: 100%;height: 100%;display: flex;flex-direction: column;">
         <div style="width: 100%;height: calc(100% - 240px);">
           <MyDashboardBox title="测试进程">
-            <CheckContent :list="list" :start="isStart" :stop="isStop" :reset="isReset"></CheckContent>
+            <CheckContent :list="list" :start="isStart" :stop="isStop" :reset="isReset" @result="handleResult"></CheckContent>
           </MyDashboardBox>
         </div>
         <div style="width: 100%;height: 240px;">
           <MyDashboardBox title="测试结果">
-            <Result></Result>
+            <Result :result="resultObj"></Result>
           </MyDashboardBox>
         </div>
       </div>

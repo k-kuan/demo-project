@@ -56,18 +56,24 @@
       checked: false,
       title: '测试项一',
       value: 0,
+      isSuccess: true,
+      failureResult: ''
     },
     {
       id: 2,
       checked: false,
       title: '测试项二',
       value: 0,
+      isSuccess: false,
+      failureResult: ''
     },
     {
       id: 3,
       checked: false,
       title: '测试项三',
       value: 0,
+      isSuccess: true,
+      failureResult: ''
     },
   ]);
   const state = reactive({
@@ -125,6 +131,7 @@
     list.value = list.value.map((item: any) => {
       item.checked = false;
       item.value = 0;
+      item.failureResult = '';
       delete item.timerId;
       return item;
     })

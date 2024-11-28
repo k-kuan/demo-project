@@ -1,5 +1,5 @@
 <template>
-  <a-layout>
+  <a-layout @contextmenu.prevent.capture>
     <a-layout-header>
       <div class="title">xxxxxxx系统</div>
     </a-layout-header>
@@ -12,8 +12,8 @@
       </a-layout-content>
     </a-layout>
   </a-layout>
+<!--  @contextmenu.prevent.capture-->
 </template>
-<!--@contextmenu.prevent.capture-->
 <script setup lang="ts">
 </script>
 
