@@ -69,6 +69,7 @@
     font-size: 16px;
     color: #11d6f3;
     text-align: left;
+    padding-left: 8px;
   }
   .title .text {
     height: 30px;

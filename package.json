@@ -11,7 +11,8 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --fix",
     "format": "prettier --write src/",
-    "html": "node HandleHtml.js"
+    "html": "node HandleHtml.js",
+    "build-and-html": "vite build && node HandleHtml.js"
   },
   "dependencies": {
     "@vitejs/plugin-legacy": "^6.0.0",

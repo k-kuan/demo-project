@@ -1,5 +1,5 @@
 <template>
-<div class="check-content">
+<div class="check-content" ref="container">
   <CheckItem v-for="(item, index) in list" :key="index" :item="item"></CheckItem>
 </div>
 </template>
@@ -7,7 +7,7 @@
 <script setup lang="ts">
   import {watch, ref, computed} from 'vue';
   import CheckItem from '@/components/CheckItem.vue';
-  const emit = defineEmits(['result']);
+  const emit = defineEmits(['result', 'finish']);
   const props = defineProps({
     list: Array,
     start: {
@@ -21,8 +21,14 @@
     reset: {
       type: Boolean,
       default: false
-    }
+    },
+    reStart: {
+      type: Boolean,
+      default: false
+    },
   });
+  const container = ref(null);
+
   const computedList = computed(() => {
     const list = props.list;
     return countResults(list);
@@ -43,7 +49,15 @@
   }
   watch(() => computedList.value, (value) => {
     if(value.fail + value.pass === props.list.length) {
+      // 测试完成
       emit('result', value);
+      emit('finish', true);
+    } else {
+      emit('finish', false);
+      emit('result', {
+        fail: 0,
+        pass: 0,
+      });
     }
   })
   watch(() => props.list, (value) => {
@@ -52,7 +66,7 @@
     }
   })
   watch(() => props.start, (newValue) => {
-    if(newValue && props.list && props.list.length > 0) {
+    if(!props.reStart && newValue && props.list && props.list.length > 0) {
       toggleProgress();
     }
   })
@@ -66,12 +80,33 @@
       resetAll();
     }
   })
+  watch(() => props.reStart, (newValue) => {
+    if(newValue) {
+      isRunning.value = false;
+      currentIndex.value = 0;
+      props.list.forEach(item => {
+        item.value = 0; // 重置value为0
+        item.failureResult = ''; // 清除失败结果
+        if (item.timerId) {
+          clearInterval(item.timerId); // 清除正在进行的定时器
+          delete item.timerId;
+        }
+      });
+      container.value.scrollTo({ top: 0, behavior: 'smooth' });
+      if(props.list && props.list.length > 0) {
+        startProgressForIndex(0);
+        setTimeout(() => {
+          toggleProgress();
+        }, 50)
+      }
+    }
+  })
   const totalDuration = 3000; // 总持续时间（毫秒）
   const isRunning = ref(false); // 控制是否运行
   const currentIndex = ref(0); // 当前正在运行的进度条索引
 
   function startProgress(item, duration, callback) {
-    const interval = 100; // 每次更新之间的间隔时间
+    const interval = 110; // 每次更新之间的间隔时间
     const steps = Math.floor(duration / interval); // 计算出总的步骤数
     let currentStep = 0;
     let initialValue = item.value;
@@ -113,6 +148,10 @@
         // 当前item的进度条完成后，递归调用下一个
         currentIndex.value = index + 1;
         startProgressForIndex(currentIndex.value);
+        // 向上滚动45像素
+        if (container.value) {
+          container.value.scrollBy({ top: 45, behavior: 'smooth' });
+        }
       });
       item.timerId = timerId; // 保存timerId以便于清理
     }
@@ -158,5 +197,6 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
+  padding: 16px;
 }
 </style>

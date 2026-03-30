@@ -1,7 +1,7 @@
 <template>
   <a-layout @contextmenu.prevent.capture>
     <a-layout-header>
-      <div class="title">xxxxxxx系统</div>
+      <div class="title">{{title}}</div>
     </a-layout-header>
     <a-layout style="height: calc(100vh - 85px);">
       <a-layout-sider>
@@ -12,9 +12,14 @@
       </a-layout-content>
     </a-layout>
   </a-layout>
-<!--  @contextmenu.prevent.capture-->
 </template>
 <script setup lang="ts">
+defineProps({
+  title: {
+    type: String,
+    default: ''
+  }
+});
 </script>
 
 <style scoped>

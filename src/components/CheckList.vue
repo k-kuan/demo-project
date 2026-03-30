@@ -2,7 +2,7 @@
 <div class="check-list-wrap">
   <div class="top">
     <a-button type="primary" @click="onReset">初始化</a-button>
-    <a-button type="primary" :disabled="isStart || isStop" @click="onJoinTest">加入测试</a-button>
+    <a-button type="primary" :disabled="isStart || isStop || !checkedCount" @click="onJoinTest">加入测试</a-button>
     <a-button type="primary" :disabled="isStart" @click="onStartTest">开始测试</a-button>
     <a-button type="primary" :disabled="isStop || (!isStart)" @click="onStop">停止测试</a-button>
   </div>
@@ -17,7 +17,7 @@
           >
             全选/反选
           </a-checkbox>
-          <div style="margin-left: 8px;color: #ffffff">
+          <div style="margin-left: 8px;color: #00efff">
           共有&nbsp;{{ list.length }}&nbsp;记录，已选中&nbsp;{{ checkedCount }}&nbsp;项</div
           >
         </div>
@@ -25,13 +25,13 @@
       <div style="width: 100%;height: calc(100% - 50px);overflow-y: auto;overflow-x: hidden;">
         <div style="width: 100%;height: 100%;">
           <template v-for="(item, index) in list" :key="item.id">
-            <div class="flex" style="padding: 16px 0;">
+            <div class="flex item-content-wrap">
               <div
                 class="item-content"
                 @click="toggleChecked(item)"
               >
                 <a-checkbox :checked="item.checked" />
-                <div style="margin-left: 16px;margin-right: 16px;">{{ index + 1 }}、</div>
+                <div style="margin-left: 16px;margin-right: 16px;">{{ index + 1 }}</div>
                 <div style="margin-right: 16px;">
                   {{item.title}}
                 </div>
@@ -47,14 +47,31 @@
 
 <script setup lang="ts">
   import {reactive, ref, watch, computed} from 'vue';
-  const emit = defineEmits(['join', 'start', 'stop', 'reset']);
+  const emit = defineEmits(['join', 'start', 'stop', 'reset', 'reStart']);
+  const props = defineProps({
+    finish: {
+      type: Boolean,
+      default: false
+    }
+  });
+  watch(() => props.finish, (value) => {
+    if(value) {
+      isStart.value = false;
+      isStop.value = false;
+      setTimeout(() => {
+        emit('start', false);
+        emit('stop', false);
+        emit('reStart', false);
+      }, 500)
+    }
+  })
   const isStart = ref(false);
   const isStop = ref(false);
   const list = ref([
     {
       id: 1,
       checked: false,
-      title: '测试项一',
+      title: '外部存储器接口测试',
       value: 0,
       isSuccess: true,
       failureResult: ''
@@ -62,15 +79,111 @@
     {
       id: 2,
       checked: false,
-      title: '测试项二',
+      title: 'EMIF接口测试',
       value: 0,
-      isSuccess: false,
+      isSuccess: true,
       failureResult: ''
     },
     {
       id: 3,
       checked: false,
-      title: '测试项三',
+      title: 'MsASP接口1测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 4,
+      checked: false,
+      title: 'MsASP接口2测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 5,
+      checked: false,
+      title: 'MsBSP接口1测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 6,
+      checked: false,
+      title: 'MsBSP接口2测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 7,
+      checked: false,
+      title: 'I2C接口1测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 8,
+      checked: false,
+      title: 'I2C接口2测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 9,
+      checked: false,
+      title: '缓存串行口1测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 10,
+      checked: false,
+      title: '缓存串行口2测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 11,
+      checked: false,
+      title: '通用定时器1测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 12,
+      checked: false,
+      title: '通用定时器2测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 13,
+      checked: false,
+      title: '模拟量输入测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 14,
+      checked: false,
+      title: '数字量输入测试',
+      value: 0,
+      isSuccess: true,
+      failureResult: ''
+    },
+    {
+      id: 15,
+      checked: false,
+      title: '多维数据感知、融合与控制算法',
       value: 0,
       isSuccess: true,
       failureResult: ''
@@ -135,7 +248,6 @@
       delete item.timerId;
       return item;
     })
-    console.log(list.value);
     setTimeout(() => {
       emit('join', []);
       emit('reset', false);
@@ -148,14 +260,25 @@
     emit('join', JSON.parse(JSON.stringify(checkedList)));
   }
   const onStartTest = () => {
-    emit('start', true);
-    emit('stop', false);
-    isStart.value = true;
-    isStop.value = false;
+    if(props.finish) {
+      emit('reStart', true);
+     setTimeout(() => {
+       emit('start', true);
+       emit('stop', false);
+       isStart.value = true;
+       isStop.value = false;
+     }, 50)
+    } else {
+      emit('start', true);
+      emit('stop', false);
+      isStart.value = true;
+      isStop.value = false;
+    }
   }
   const onStop = () => {
     emit('stop', true);
     emit('start', false);
+    emit('reStart', false);
     isStart.value = false;
     isStop.value = true;
   }
@@ -191,22 +314,27 @@
   border: 1px solid #017db3;
   font-size: 12px;
   padding: 0 20px;
-  color: #ffffff;
+  color: #00efff;
 }
 .ant-btn-primary[disabled],.ant-btn-primary[disabled]:hover {
-  color: #00000075 !important;
-  border-color: #d9d9d9 !important;
-  background: #f5f5f5 !important;
+  color: #00000060 !important;
+  border-color: #00efff40 !important;
+  background: #00efff40 !important
+}
+.item-content-wrap {
+  padding: 14px 0;
 }
 .item-content {
   width: 100%;
   display: flex;
   align-items: center;
-  color: #ffffff;
+  color: #00efff;
   font-size: 14px;
   cursor: pointer;
+  padding: 2px 0;
+  background: linear-gradient(90deg, #00317335 0%, #1B9CFF40 52%, #00317335 100%);
 }
 .ant-checkbox-wrapper {
-  color: #ffffff;
+  color: #00efff;
 }
 </style>
