@@ -39,7 +39,7 @@ const handleFinish = (item) => {
 </script>
 
 <template>
-  <Layout title="时序测量及显控系统">
+  <Layout title="时序测量及显控系统2">
     <template #sider>
       <MyDashboardBox title="测试项">
         <CheckList2 @reset="handleReset"
